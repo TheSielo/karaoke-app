@@ -9,6 +9,5 @@ class KaraokeApp: Application() {
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
-        Timber.d("Test Karaoke App")
     }
 }

@@ -10,17 +10,17 @@ import com.sielotech.karaokeapp.database.dao.Song
 interface SongDao {
     /** Return all the songs present in the song table. */
     @Query("SELECT * FROM song")
-    fun getAll(): List<Song>
+    suspend fun getAll(): List<Song>
 
     /** Insert a new song in the [song] table.
      * @param song An instance of the song to be inserted.
      */
     @Insert
-    fun insert(song: Song)
+    suspend fun insert(song: Song)
 
     /** Delete a song from the [song] table.
      * @param song The song to be deleted.
      */
     @Delete
-    fun delete(song: Song)
+    suspend fun delete(song: Song)
 }

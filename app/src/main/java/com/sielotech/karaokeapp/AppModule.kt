@@ -18,7 +18,7 @@ import javax.inject.Singleton
 object AppModule {
 
     /** Provides the Room database.
-     * @return A singleton instance of KDatabase.
+     * @return A singleton instance of [KDatabase].
      */
     @Singleton
     @Provides
@@ -28,10 +28,12 @@ object AppModule {
         app,
         KDatabase::class.java,
         "karaoke_app.db"
-    ).build()
+    )
+        .fallbackToDestructiveMigration()
+        .build()
 
     /** Provides the SongDao used by Room.
-     * @return A singleton instance of SongDao.
+     * @return A singleton instance of [SongDao].
      */
     @Singleton
     @Provides
