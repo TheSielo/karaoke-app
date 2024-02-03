@@ -37,4 +37,4 @@ google-services.json
 gen-external-apklibs
 
 .keystores/
-.app/release/
+.release/
