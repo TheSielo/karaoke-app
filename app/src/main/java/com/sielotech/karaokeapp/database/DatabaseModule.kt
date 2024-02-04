@@ -20,9 +20,9 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideKDatabase(
-        @ApplicationContext app: Context
+        @ApplicationContext context: Context
     ) = Room.databaseBuilder(
-        app,
+        context,
         KDatabase::class.java,
         "karaoke_app.db"
     )

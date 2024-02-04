@@ -7,6 +7,7 @@ import com.sielotech.karaokeapp.api.FuriganaRepository
 import com.sielotech.karaokeapp.database.LocalSongsDataSource
 import com.sielotech.karaokeapp.database.SongsRepository
 import com.sielotech.karaokeapp.database.dao.Song
+import com.sielotech.karaokeapp.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -19,7 +20,13 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val songsRepository: SongsRepository,
     private val furiganaRepository: FuriganaRepository,
+    private val preferencesRepository: PreferencesRepository,
 ): ViewModel() {
+    init {
+        viewModelScope.launch {
+            preferencesRepository.setIsFirstAccess()
+        }
+    }
 
     fun addSong(song: Song) {
         viewModelScope.launch {

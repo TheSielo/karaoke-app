@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.sielotech.karaokeapp.database.dao.Song
 
+/** The Room DAO relative to the [Song] entity. */
 @Dao
 interface SongDao {
     /** Return all the songs present in the song table. */

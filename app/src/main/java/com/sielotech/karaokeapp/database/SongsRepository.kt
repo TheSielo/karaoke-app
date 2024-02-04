@@ -5,7 +5,7 @@ import com.sielotech.karaokeapp.database.entity.SongDao
 import javax.inject.Inject
 
 /** Entry point for all operations involving creating, retrieving, updating and deleting songs.
- * @param songDao A SongDao singleton that's provided by Hilt through DI.
+ * @param songDao A [SongDao] singleton that's provided by Hilt through DI.
  */
 class SongsRepository @Inject constructor(
     private val songDao: SongDao
