@@ -15,6 +15,5 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         viewModel.addSong(Song(title = "ciao", japaneseText = "japanese", translatedText = "translation"))
         //val songs = viewModel.getSongs()
-        Timber.d("ciao")
     }
 }
