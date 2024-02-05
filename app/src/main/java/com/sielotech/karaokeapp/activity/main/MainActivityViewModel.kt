@@ -2,12 +2,15 @@ package com.sielotech.karaokeapp.activity.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sielotech.karaokeapp.activity.auth.AuthenticationViewModel
 import com.sielotech.karaokeapp.api.FuriganaRepository
 import com.sielotech.karaokeapp.auth.AuthenticationRepository
 import com.sielotech.karaokeapp.database.SongsRepository
 import com.sielotech.karaokeapp.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,15 +28,19 @@ internal class MainActivityViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val authenticationRepository: AuthenticationRepository,
 ): ViewModel() {
+    private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
+    val navigationEvent = _navigationEvent.asSharedFlow()
+
     private val mutableState = MutableStateFlow<MainActivityUiState>(MainActivityUiState.Loading)
     val mainActivityUiState = mutableState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            preferencesRepository.setIsFirstAccess()
-            val loggedIn = authenticationRepository.isUserLoggedIn()
-            Timber.d("logged in: $loggedIn")
-            mutableState.value = MainActivityUiState.Default(loggedIn = loggedIn)
+        checkLoginStatus()
+    }
+
+    private fun checkLoginStatus() = viewModelScope.launch {
+        if(!authenticationRepository.isUserLoggedIn()) {
+            _navigationEvent.emit(NavigationEvent.NavigateToLogin)
         }
     }
 
@@ -41,11 +48,18 @@ internal class MainActivityViewModel @Inject constructor(
         return songsRepository.getSongs()
     }*/
 
+    fun isUserLoggedIn(): Boolean {
+       return authenticationRepository.isUserLoggedIn()
+    }
 
     internal sealed class MainActivityUiState {
         data class Default(
             val loggedIn: Boolean
         ) : MainActivityUiState()
         data object Loading: MainActivityUiState()
+    }
+
+    sealed class NavigationEvent {
+        data object NavigateToLogin : NavigationEvent()
     }
 }

@@ -21,6 +21,15 @@ internal class MainActivity : KActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.navigationEvent.collect { event ->
+                    if (event is MainActivityViewModel.NavigationEvent.NavigateToLogin) {
+                        startActivity(Intent(this@MainActivity, AuthenticationActivity::class.java))
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.mainActivityUiState.collect { state ->
                     updateUI(state)
                 }
@@ -30,11 +39,6 @@ internal class MainActivity : KActivity() {
 
     private fun updateUI(state: MainActivityViewModel.MainActivityUiState) {
         if(state is MainActivityViewModel.MainActivityUiState.Default) {
-            //If the user is not authenticated, launch the authentication flow.
-            if (!state.loggedIn) {
-                startActivity(Intent(
-                    this@MainActivity, AuthenticationActivity::class.java))
-            }
         }
     }
 }

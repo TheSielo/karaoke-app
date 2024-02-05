@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import timber.log.Timber
 
+/** This is the abstract Activity class which every other Activity should implement. It contains
+ * several useful logging and (soon) utility methods.
+ */
 abstract class KActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
