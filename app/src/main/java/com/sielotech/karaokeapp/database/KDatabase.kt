@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.sielotech.karaokeapp.database.dao.Song
 import com.sielotech.karaokeapp.database.entity.SongDao
 
-@Database(entities = [Song::class], version = 2)
+@Database(entities = [Song::class], version = 4)
 abstract class KDatabase : RoomDatabase() {
     abstract fun songDao(): SongDao
 }

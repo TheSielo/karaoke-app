@@ -8,9 +8,10 @@ import kotlinx.coroutines.*
 class AuthenticationRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) {
+    val userId = firebaseAuth.currentUser?.uid
+
     fun isUserLoggedIn(): Boolean {
-        val currentUser = firebaseAuth.currentUser
-        return currentUser != null
+        return firebaseAuth.currentUser != null
     }
 
     suspend fun registerUser(email: String, password: String): Boolean = withContext(Dispatchers.IO) {

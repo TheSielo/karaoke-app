@@ -2,21 +2,19 @@ package com.sielotech.karaokeapp.activity.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sielotech.karaokeapp.activity.auth.AuthenticationViewModel
 import com.sielotech.karaokeapp.api.FuriganaRepository
 import com.sielotech.karaokeapp.auth.AuthenticationRepository
 import com.sielotech.karaokeapp.database.SongsRepository
+import com.sielotech.karaokeapp.database.dao.Song
 import com.sielotech.karaokeapp.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
-import kotlin.math.log
 
 /** Manages the state of [MainActivity].
  * @param songsRepository A [SongsRepository] singleton provided by Hilt through DI.
@@ -27,7 +25,7 @@ internal class MainActivityViewModel @Inject constructor(
     private val furiganaRepository: FuriganaRepository,
     private val preferencesRepository: PreferencesRepository,
     private val authenticationRepository: AuthenticationRepository,
-): ViewModel() {
+) : ViewModel() {
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
     val navigationEvent = _navigationEvent.asSharedFlow()
 
@@ -39,7 +37,7 @@ internal class MainActivityViewModel @Inject constructor(
     }
 
     private fun checkLoginStatus() = viewModelScope.launch {
-        if(!authenticationRepository.isUserLoggedIn()) {
+        if (!authenticationRepository.isUserLoggedIn()) {
             _navigationEvent.emit(NavigationEvent.NavigateToLogin)
         }
     }
@@ -48,15 +46,25 @@ internal class MainActivityViewModel @Inject constructor(
         return songsRepository.getSongs()
     }*/
 
-    fun isUserLoggedIn(): Boolean {
-       return authenticationRepository.isUserLoggedIn()
+    fun addOrUpdateSong(title: String, jap: String, trans: String, url: String) {
+        val uuid = UUID.randomUUID().toString()
+        val song = Song(
+            uuid = uuid, title = title, japaneseText = jap, translatedText = trans, url = url
+        )
+        viewModelScope.launch {
+            val userId = authenticationRepository.userId
+            if (userId != null) {
+                songsRepository.addOrUpdateSong(userId, song)
+            }
+        }
     }
 
     internal sealed class MainActivityUiState {
         data class Default(
             val loggedIn: Boolean
         ) : MainActivityUiState()
-        data object Loading: MainActivityUiState()
+
+        data object Loading : MainActivityUiState()
     }
 
     sealed class NavigationEvent {

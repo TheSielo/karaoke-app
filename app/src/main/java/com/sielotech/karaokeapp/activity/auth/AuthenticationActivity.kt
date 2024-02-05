@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.firebase.Firebase
 import com.sielotech.karaokeapp.R
 import com.sielotech.karaokeapp.activity.KActivity
 import com.sielotech.karaokeapp.databinding.ActivityAuthenticationBinding

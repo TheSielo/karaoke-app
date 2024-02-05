@@ -2,6 +2,10 @@ package com.sielotech.karaokeapp.database
 
 import android.content.Context
 import androidx.room.Room
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import com.google.firebase.database.ktx.database
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,4 +39,8 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideSongDao(db: KDatabase) = db.songDao()
+
+    @Singleton
+    @Provides
+    fun provideRealtimeDatabase() = Firebase.database
 }

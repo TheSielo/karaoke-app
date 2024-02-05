@@ -3,7 +3,6 @@ package com.sielotech.karaokeapp.activity.main
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -35,6 +34,7 @@ internal class MainActivity : KActivity() {
                 }
             }
         }
+        //viewModel.addOrUpdateSong("ciao", "jappones","translescion", "https://cose")
     }
 
     private fun updateUI(state: MainActivityViewModel.MainActivityUiState) {

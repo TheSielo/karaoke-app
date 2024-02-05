@@ -2,19 +2,42 @@ package com.sielotech.karaokeapp.database
 
 import com.sielotech.karaokeapp.database.dao.Song
 import com.sielotech.karaokeapp.database.entity.SongDao
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /** Entry point for all operations involving creating, retrieving, updating and deleting songs.
  * @param songDao A [SongDao] singleton that's provided by Hilt through DI.
  */
 class SongsRepository @Inject constructor(
-    private val songDao: SongDao
+    private val localSongsDataSource: LocalSongsDataSource,
+    private val remoteSongsDataSource: RemoteSongsDataSource,
 ) {
-    suspend fun addSong(song: Song) {
-        songDao.insert(song)
+    private val scope = CoroutineScope(Job() + Dispatchers.IO)
+
+    init {
+        loadRemoteSongs()
     }
 
-    suspend fun getSongs(): List<Song> {
-        return songDao.getAll()
+    private fun loadRemoteSongs() {
+        scope.launch {
+            remoteSongsDataSource.remoteSongsFlow.collect {songs ->
+                for (song in songs) {
+                    addOrUpdateSong(song)
+                }
+            }
+        }
+    }
+
+    suspend fun addOrUpdateSong(song: Song) {
+        localSongsDataSource.addOrUpdate(song)
+        remoteSongsDataSource.addOrUpdate(song)
+    }
+
+    suspend fun getAllSongsFlow(): Flow<List<Song>> {
+        return localSongsDataSource.getAllSongsFlow()
     }
 }
