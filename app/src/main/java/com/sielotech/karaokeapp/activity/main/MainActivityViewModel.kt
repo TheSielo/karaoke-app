@@ -8,10 +8,12 @@ import com.sielotech.karaokeapp.database.SongsRepository
 import com.sielotech.karaokeapp.database.dao.Song
 import com.sielotech.karaokeapp.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
@@ -34,34 +36,61 @@ internal class MainActivityViewModel @Inject constructor(
 
     init {
         checkLoginStatus()
+        collectSongs()
     }
 
     private fun checkLoginStatus() = viewModelScope.launch {
         if (!authenticationRepository.isUserLoggedIn()) {
             _navigationEvent.emit(NavigationEvent.NavigateToLogin)
         }
+
+        viewModelScope.launch {
+            preferencesRepository.setIsFirstAccess()
+        }
     }
 
-    /*fun getSongs(): List<Song> {
-        return songsRepository.getSongs()
-    }*/
-
-    fun addOrUpdateSong(title: String, jap: String, trans: String, url: String) {
-        val uuid = UUID.randomUUID().toString()
-        val song = Song(
-            uuid = uuid, title = title, japaneseText = jap, translatedText = trans, url = url
-        )
+    private fun collectSongs() {
         viewModelScope.launch {
-            val userId = authenticationRepository.userId
-            if (userId != null) {
-                songsRepository.addOrUpdateSong(song)
+            songsRepository.getAllSongsFlow().collect { songs ->
+                when (mutableState.value) {
+                    is MainActivityUiState.Loading -> {
+                        if(songs.isNotEmpty()) {
+                            mutableState.value = MainActivityUiState.Default(
+                                selectedIndex = 0,
+                                currentSong = songs[0],
+                                songs = songs
+                            )
+                        }
+                    }
+
+                    is MainActivityUiState.Default -> {
+                        val state = (mutableState.value as MainActivityUiState.Default)
+                        mutableState.value = MainActivityUiState.Default(
+                            selectedIndex = state.selectedIndex,
+                            currentSong = state.songs[state.selectedIndex],
+                            songs = songs
+                        )
+                    }
+                }
             }
         }
     }
 
+
+    fun changeSong(index: Int) {
+        val state = (mutableState.value as MainActivityUiState.Default)
+        mutableState.value = MainActivityUiState.Default(
+            selectedIndex = index,
+            currentSong = state.songs[index],
+            songs = state.songs
+        )
+    }
+
     internal sealed class MainActivityUiState {
         data class Default(
-            val loggedIn: Boolean
+            val currentSong: Song,
+            val selectedIndex: Int,
+            val songs: List<Song>,
         ) : MainActivityUiState()
 
         data object Loading : MainActivityUiState()

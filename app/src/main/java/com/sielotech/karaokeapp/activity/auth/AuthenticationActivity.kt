@@ -1,5 +1,6 @@
 package com.sielotech.karaokeapp.activity.auth
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -70,4 +71,8 @@ internal class AuthenticationActivity : KActivity() {
             }
         }
     }
+
+    @SuppressLint("MissingSuperCall")
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {}
 }
