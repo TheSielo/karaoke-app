@@ -3,21 +3,27 @@ package com.sielotech.karaokeapp.activity.main
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.sielotech.karaokeapp.activity.KActivity
 import com.sielotech.karaokeapp.activity.auth.AuthenticationActivity
+import com.sielotech.karaokeapp.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 internal class MainActivity : KActivity() {
 
+    private lateinit var b: ActivityMainBinding
     private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        b = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(b.root)
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.navigationEvent.collect { event ->
@@ -34,11 +40,14 @@ internal class MainActivity : KActivity() {
                 }
             }
         }
-        //viewModel.addOrUpdateSong("ciao", "jappones","translescion", "https://cose")
+
+        b.topAppBar.setNavigationOnClickListener {
+            b.drawerLayout.open()
+        }
     }
 
     private fun updateUI(state: MainActivityViewModel.MainActivityUiState) {
-        if(state is MainActivityViewModel.MainActivityUiState.Default) {
+        if (state is MainActivityViewModel.MainActivityUiState.Default) {
         }
     }
 }
