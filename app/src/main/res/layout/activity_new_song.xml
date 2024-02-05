@@ -24,7 +24,7 @@
         android:id="@+id/japanese_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
+        android:inputType="textMultiLine"
         app:layout_constraintTop_toBottomOf="@+id/jap_text_view"
         />
 
@@ -48,7 +48,7 @@
         android:id="@+id/trans_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
+        android:inputType="textMultiLine"
         app:layout_constraintTop_toBottomOf="@+id/trans_text_view"
         />
 
@@ -73,7 +73,7 @@
         android:id="@+id/title_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
+        android:inputType="text"
         app:layout_constraintTop_toBottomOf="@+id/trans_text_view"
         />
 
@@ -92,7 +92,7 @@
         android:id="@+id/url_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
+        android:inputType="text"
         app:layout_constraintTop_toBottomOf="@+id/url_text_view"
         />
 

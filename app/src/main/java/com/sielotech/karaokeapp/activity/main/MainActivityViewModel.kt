@@ -54,11 +54,12 @@ internal class MainActivityViewModel @Inject constructor(
             songsRepository.getAllSongsFlow().collect { songs ->
                 when (mutableState.value) {
                     is MainActivityUiState.Loading -> {
-                        if(songs.isNotEmpty()) {
+                        if (songs.isNotEmpty()) {
                             mutableState.value = MainActivityUiState.Default(
                                 selectedIndex = 0,
                                 currentSong = songs[0],
-                                songs = songs
+                                songs = songs,
+                                isPlaying = false
                             )
                         }
                     }
@@ -68,7 +69,8 @@ internal class MainActivityViewModel @Inject constructor(
                         mutableState.value = MainActivityUiState.Default(
                             selectedIndex = state.selectedIndex,
                             currentSong = state.songs[state.selectedIndex],
-                            songs = songs
+                            songs = songs,
+                            isPlaying = false
                         )
                     }
                 }
@@ -82,7 +84,18 @@ internal class MainActivityViewModel @Inject constructor(
         mutableState.value = MainActivityUiState.Default(
             selectedIndex = index,
             currentSong = state.songs[index],
-            songs = state.songs
+            songs = state.songs,
+            isPlaying = false
+        )
+    }
+
+    fun playButtonPressed() {
+        val state = (mutableState.value as MainActivityUiState.Default)
+        mutableState.value = MainActivityUiState.Default(
+            selectedIndex = state.selectedIndex,
+            currentSong = state.currentSong,
+            songs = state.songs,
+            isPlaying = !state.isPlaying
         )
     }
 
@@ -91,6 +104,7 @@ internal class MainActivityViewModel @Inject constructor(
             val currentSong: Song,
             val selectedIndex: Int,
             val songs: List<Song>,
+            val isPlaying: Boolean,
         ) : MainActivityUiState()
 
         data object Loading : MainActivityUiState()

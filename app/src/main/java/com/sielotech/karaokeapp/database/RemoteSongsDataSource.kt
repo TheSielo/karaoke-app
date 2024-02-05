@@ -36,6 +36,11 @@ class RemoteSongsDataSource @Inject constructor(
             while(firebaseAuth.currentUser?.uid == null) {
                 delay(1000)
             }
+            val userId = firebaseAuth.currentUser?.uid
+            if(userId != null) {
+                val songRef = database.getReference("$userId/songs/")
+                songRef.setValue(null)
+            }
             getRemoteSongs()
         }
     }
@@ -55,15 +60,19 @@ class RemoteSongsDataSource @Inject constructor(
             val songsReg = database.getReference("$userId/songs")
             songsReg.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val songs: Map<String, Any> = dataSnapshot.value as Map<String, Any>
-                    Timber.d("Value is: $songs")
-                    val gson = Gson()
-                    val deserializedSongs = arrayListOf<Song>()
-                    for (song in songs.values) {
-                        val deserializedSong = gson.fromJson(song as String, Song::class.java)
-                        deserializedSongs.add(deserializedSong)
+                    try {
+                        val songs: Map<String, Any> = dataSnapshot.value as Map<String, Any>
+                        Timber.d("Value is: $songs")
+                        val gson = Gson()
+                        val deserializedSongs = arrayListOf<Song>()
+                        for (song in songs.values) {
+                            val deserializedSong = gson.fromJson(song as String, Song::class.java)
+                            deserializedSongs.add(deserializedSong)
+                        }
+                        mutableRemoteSongsFlow.value = deserializedSongs
+                    } catch (e: Exception) {
+                        Timber.w("Deserialization error", e)
                     }
-                    mutableRemoteSongsFlow.value = deserializedSongs
                 }
 
                 override fun onCancelled(error: DatabaseError) {

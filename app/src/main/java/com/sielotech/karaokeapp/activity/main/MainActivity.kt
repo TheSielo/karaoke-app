@@ -4,13 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.sielotech.karaokeapp.R
 import com.sielotech.karaokeapp.activity.KActivity
 import com.sielotech.karaokeapp.activity.auth.AuthenticationActivity
 import com.sielotech.karaokeapp.activity.new_song.NewSongActivity
+import com.sielotech.karaokeapp.database.dao.Song
 import com.sielotech.karaokeapp.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -43,7 +46,6 @@ internal class MainActivity : KActivity() {
             }
         }
 
-
         b.topAppBar.apply {
             setNavigationOnClickListener { b.drawerLayout.open()}
             setOnMenuItemClickListener { item ->
@@ -57,6 +59,12 @@ internal class MainActivity : KActivity() {
                     }
                 }
             }
+        }
+
+        val layoutManager = LinearLayoutManager(this)
+        b.recyclerView.layoutManager = layoutManager
+        b.playButton.setOnClickListener {
+            viewModel.playButtonPressed()
         }
     }
 
@@ -73,6 +81,20 @@ internal class MainActivity : KActivity() {
                     false
                 }
             }
+
+            updateKaraoke(state.currentSong, state.isPlaying)
         }
+    }
+
+    private fun updateKaraoke(currentSong: Song, isPlaying: Boolean) {
+        val japLines = currentSong.japaneseText.split("\n")
+        val transLines = currentSong.translatedText.split("\n")
+        val lyrics = Lyrics(japLines, transLines)
+        val adapter = KaraokeRecyclerViewAdapter(lyrics) {
+
+        }
+        b.recyclerView.adapter = adapter
+        val icon = if(isPlaying) R.drawable.icon_pause else R.drawable.icon_play
+        b.playButton.setImageDrawable(ContextCompat.getDrawable(this, icon))
     }
 }
