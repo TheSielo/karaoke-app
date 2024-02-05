@@ -54,7 +54,7 @@ internal class MainActivityViewModel @Inject constructor(
         viewModelScope.launch {
             val userId = authenticationRepository.userId
             if (userId != null) {
-                songsRepository.addOrUpdateSong(userId, song)
+                songsRepository.addOrUpdateSong(song)
             }
         }
     }

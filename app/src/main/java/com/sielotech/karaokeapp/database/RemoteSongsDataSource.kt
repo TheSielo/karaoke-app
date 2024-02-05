@@ -55,9 +55,15 @@ class RemoteSongsDataSource @Inject constructor(
             val songsReg = database.getReference("$userId/songs")
             songsReg.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val songs: Map<String, Song> = dataSnapshot.value as Map<String, Song>
+                    val songs: Map<String, Any> = dataSnapshot.value as Map<String, Any>
                     Timber.d("Value is: $songs")
-                    mutableRemoteSongsFlow.value = songs.values.toList()
+                    val gson = Gson()
+                    val deserializedSongs = arrayListOf<Song>()
+                    for (song in songs.values) {
+                        val deserializedSong = gson.fromJson(song as String, Song::class.java)
+                        deserializedSongs.add(deserializedSong)
+                    }
+                    mutableRemoteSongsFlow.value = deserializedSongs
                 }
 
                 override fun onCancelled(error: DatabaseError) {

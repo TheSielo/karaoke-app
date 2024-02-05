@@ -2,6 +2,7 @@ package com.sielotech.karaokeapp.database.dao
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /** The entity representing a song in the Room database.
@@ -13,7 +14,7 @@ import androidx.room.PrimaryKey
  * @param translatedText The lyrics translated in a chosen language.
  * @param url The url of a YouTube video to play.
  */
-@Entity
+@Entity(indices = [Index(value = ["uuid"], unique = true)])
 data class Song(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "uuid") val uuid: String,

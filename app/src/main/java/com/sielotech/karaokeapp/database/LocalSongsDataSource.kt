@@ -12,7 +12,7 @@ class LocalSongsDataSource @Inject constructor(
         songDao.insertOrUpdate(song)
     }
 
-    suspend fun getAllSongsFlow(): Flow<List<Song>> {
+    fun getAllSongsFlow(): Flow<List<Song>> {
         return songDao.getSongsFlow()
     }
 
