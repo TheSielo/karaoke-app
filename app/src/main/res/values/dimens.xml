@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="outer_padding">24dp</dimen>
+    <dimen name="vertical_text_padding">16dp</dimen>
+    <dimen name="horizontal_text_padding">16dp</dimen>
+    <dimen name="text_size_default">17sp</dimen>
+    <dimen name="text_size_very_big">34sp</dimen>
+</resources>
