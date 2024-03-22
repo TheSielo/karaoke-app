@@ -1,7 +1,10 @@
 package com.sielotech.karaokeapp.activity.new_song
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +27,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,23 +43,19 @@ internal object NewSongUI {
     @Composable
     fun NewSongScreen(vm: NewSongViewModel, navController: NavController) {
         val scope = rememberCoroutineScope()
-        Scaffold(
-            topBar = {
-                TopAppBar(title = { Text("Add new song") },
-                    navigationIcon = {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back",
-                            modifier = Modifier.clickable(onClick = {
-                                scope.launch {
-                                    navController.popBackStack()
-                                }
-                            })
-                        )
-                    }
+        Scaffold(topBar = {
+            TopAppBar(title = { Text("Add new song") }, navigationIcon = {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Go back",
+                    modifier = Modifier.clickable(onClick = {
+                        scope.launch {
+                            navController.popBackStack()
+                        }
+                    })
                 )
-            }
-        ) { innerPadding ->
+            })
+        }) { innerPadding ->
             val padding = remember { PaddingValues(all = 16.dp) }
             val textState = remember { mutableStateOf("") }
             val step = remember { mutableIntStateOf(1) }
@@ -64,41 +65,87 @@ internal object NewSongUI {
                     .fillMaxHeight()
             ) {
                 Column(Modifier.padding(padding)) {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
+                    Box(Modifier.weight(1f)) {
+                        TopContent(step, textState)
+                    }
+                    Spacer(Modifier.height(16.dp))
+                    Buttons(step)
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun TopContent(step: MutableIntState, textState: MutableState<String>) {
+        AnimatedContent(
+            targetState = step.intValue,
+            transitionSpec = { fadeIn() togetherWith fadeOut() }
+        ) {
+            when (it) {
+                1 -> {
+                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
                         value = textState.value,
                         onValueChange = { newText ->
                             textState.value = newText
                         },
-                        label = { Text(text = "Paste here the japanese lyrics") }
-                    )
-                    Spacer(Modifier.height(16.dp))
-                    Row {
-                        Box(modifier = Modifier.weight(0.5f)) {
-                            androidx.compose.animation.AnimatedVisibility(
-                                visible = step.intValue > 1,
-                                enter = fadeIn(),
-                                exit = fadeOut()
-                            ) {
-                                OutlinedButton(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    onClick = { step.intValue-- }
-                                ) {
-                                    Text(text = "Previous")
-                                }
-                            }
-                        }
+                        singleLine = true,
+                        label = { Text(text = "The song title") })
+                }
 
-                        Spacer(Modifier.width(16.dp))
+                2 -> {
+                    OutlinedTextField(modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                        value = textState.value,
+                        onValueChange = { newText ->
+                            textState.value = newText
+                        },
+                        label = { Text(text = "Paste here the japanese lyrics") })
+                }
 
-                        Button(
-                            modifier = Modifier.weight(0.5f),
-                            onClick = { step.intValue++ }
-                        ) {
-                            Text(text = "Next")
-                        }
+                3 -> {
+                    OutlinedTextField(modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
+                        value = textState.value,
+                        onValueChange = { newText ->
+                            textState.value = newText
+                        },
+                        label = { Text(text = "Paste here the translated lyrics") })
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalAnimationApi::class)
+    @Composable
+    private fun Buttons(step: MutableIntState) {
+        Row {
+            Box(modifier = Modifier.weight(0.5f)) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = step.intValue > 1, enter = fadeIn(), exit = fadeOut()
+                ) {
+                    OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = {
+                        if (step.intValue > 1) step.intValue--
+                    }) {
+                        Text(text = "Previous")
+                    }
+                }
+            }
+
+            Spacer(Modifier.width(16.dp))
+
+            Button(modifier = Modifier.weight(0.5f), onClick = {
+                if (step.intValue < 3) step.intValue++
+            }) {
+                AnimatedContent(targetState = step.intValue == 3,
+                    transitionSpec = { fadeIn() togetherWith fadeOut() }
+
+                ) {
+                    if (it) {
+                        Text(text = "Finish")
+                    } else {
+                        Text(text = "Next")
                     }
                 }
             }
