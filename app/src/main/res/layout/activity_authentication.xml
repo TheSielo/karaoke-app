@@ -68,7 +68,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/sign_in_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/password_text_input_layout" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/register_button"
         style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="match_parent"
@@ -97,7 +97,7 @@
         android:layout_height="4dp"
         app:constraint_referenced_ids="sign_in_button, register_button" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/reg_register_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/password_text_input_layout" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/reg_login_instead_button"
         style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="match_parent"

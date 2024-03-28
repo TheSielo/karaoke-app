@@ -36,21 +36,15 @@ internal object KaraokeUI {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun KaraokeScreen(vm: KaraokeViewModel, onNavigateToLogin: () -> Unit, onNavigateToNewSong: () -> Unit,) {
+    fun KaraokeScreen(vm: KaraokeViewModel, onNavigateToNewSong: () -> Unit,) {
         val scope = rememberCoroutineScope()
         val state by vm.uiState.collectAsState()
-        LaunchedEffect("karaokeScreen") {
-            vm.uiState.collect {
-
-            }
-        }
-
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
         ModalNavigationDrawer(
             drawerContent = {
                 ModalDrawerSheet {
-                    Text("Drawer title", modifier = Modifier.padding(16.dp))
+                    Text(state.email, modifier = Modifier.padding(16.dp))
                     HorizontalDivider()
                     NavigationDrawerItem(
                         label = { Text(text = "Drawer Item") },
@@ -91,13 +85,6 @@ internal object KaraokeUI {
                         },
                     )
                 },
-                floatingActionButton = {
-                    FloatingActionButton(
-                        onClick = {}
-                    ) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = "")
-                    }
-                }
             ) { innerPadding ->
                 Column(
                     modifier = Modifier

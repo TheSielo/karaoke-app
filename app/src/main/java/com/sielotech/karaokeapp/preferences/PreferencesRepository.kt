@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -12,19 +13,36 @@ import javax.inject.Inject
 class PreferencesRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
-    /** Indicates if this is the first time the user open the app. */
-    private val isFirstAccessKey = booleanPreferencesKey("is_first_access")
+    /** Indicates if a user has successfully authenticated. */
+    private val isLoggedInKey = booleanPreferencesKey("is_logged_in")
 
-    /** A Flow that emits the current value assigned to [isFirstAccessKey]. */
-    val isFirstAccess: Flow<Boolean> = dataStore.data
+    /** Stores the currently logged in user's email address. */
+    private val userEmailKey = stringPreferencesKey("user_email")
+
+
+    /** A Flow that emits the current value assigned to [isLoggedIn]. */
+    val isLoggedIn: Flow<Boolean> = dataStore.data
         .map { preferences ->
-            preferences[isFirstAccessKey] ?: true
+            preferences[isLoggedInKey] ?: false
         }
 
-    /** Set [isFirstAccessKey] to false. */
-    suspend fun setIsFirstAccess() {
+    /** A Flow that emits the current value assigned to [userEmail]. */
+    val userEmail: Flow<String> = dataStore.data
+        .map { preferences ->
+            preferences[userEmailKey] ?: ""
+        }
+
+   /** Set [isLoggedInKey] value. */
+    suspend fun setIsLoggedIn(isLoggedIn: Boolean) {
         dataStore.edit { settings ->
-            settings[isFirstAccessKey] = false
+            settings[isLoggedInKey] = isLoggedIn
+        }
+    }
+
+    /** Set [userEmail] value. */
+    suspend fun setUserEmail(email: String) {
+        dataStore.edit { settings ->
+            settings[userEmailKey] = email
         }
     }
 }

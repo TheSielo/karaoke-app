@@ -1,5 +1,6 @@
 package com.sielotech.karaokeapp.activity.new_song
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -57,7 +58,9 @@ internal object NewSongUI {
             })
         }) { innerPadding ->
             val padding = remember { PaddingValues(all = 16.dp) }
-            val textState = remember { mutableStateOf("") }
+            val titleTextState = remember { mutableStateOf("") }
+            val japTextState = remember { mutableStateOf("") }
+            val transTextState = remember { mutableStateOf("") }
             val step = remember { mutableIntStateOf(1) }
             Box(
                 Modifier
@@ -66,17 +69,22 @@ internal object NewSongUI {
             ) {
                 Column(Modifier.padding(padding)) {
                     Box(Modifier.weight(1f)) {
-                        TopContent(step, textState)
+                        TopContent(step, titleTextState, japTextState, transTextState)
                     }
                     Spacer(Modifier.height(16.dp))
-                    Buttons(step)
+                    Buttons(vm, step, titleTextState, japTextState, transTextState)
                 }
             }
         }
     }
 
     @Composable
-    private fun TopContent(step: MutableIntState, textState: MutableState<String>) {
+    private fun TopContent(
+        step: MutableIntState,
+        titleTextState: MutableState<String>,
+        japTextState: MutableState<String>,
+        transTextState: MutableState<String>
+    ) {
         AnimatedContent(
             targetState = step.intValue,
             transitionSpec = { fadeIn() togetherWith fadeOut() }
@@ -84,9 +92,9 @@ internal object NewSongUI {
             when (it) {
                 1 -> {
                     OutlinedTextField(modifier = Modifier.fillMaxWidth(),
-                        value = textState.value,
+                        value = titleTextState.value,
                         onValueChange = { newText ->
-                            textState.value = newText
+                            titleTextState.value = newText
                         },
                         singleLine = true,
                         label = { Text(text = "The song title") })
@@ -96,9 +104,9 @@ internal object NewSongUI {
                     OutlinedTextField(modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
-                        value = textState.value,
+                        value = japTextState.value,
                         onValueChange = { newText ->
-                            textState.value = newText
+                            japTextState.value = newText
                         },
                         label = { Text(text = "Paste here the japanese lyrics") })
                 }
@@ -107,19 +115,24 @@ internal object NewSongUI {
                     OutlinedTextField(modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(),
-                        value = textState.value,
+                        value = transTextState.value,
                         onValueChange = { newText ->
-                            textState.value = newText
+                            transTextState.value = newText
                         },
-                        label = { Text(text = "Paste here the translated lyrics") })
+                        label = { Text(text = "Paste here the translation (optional)") })
                 }
             }
         }
     }
 
-    @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    private fun Buttons(step: MutableIntState) {
+    private fun Buttons(
+        vm: NewSongViewModel,
+        step: MutableIntState,
+        titleTextState: MutableState<String>,
+        japTextState: MutableState<String>,
+        transTextState: MutableState<String>
+    ) {
         Row {
             Box(modifier = Modifier.weight(0.5f)) {
                 androidx.compose.animation.AnimatedVisibility(
@@ -135,12 +148,23 @@ internal object NewSongUI {
 
             Spacer(Modifier.width(16.dp))
 
-            Button(modifier = Modifier.weight(0.5f), onClick = {
-                if (step.intValue < 3) step.intValue++
-            }) {
+            Button(
+                modifier = Modifier.weight(0.5f), onClick = {
+                    if (step.intValue < 3) {
+                        step.intValue++
+                    } else {
+                        vm.addOrUpdateSong(
+                            titleTextState.value,
+                            japTextState.value,
+                            transTextState.value
+                        )
+                    }
+                }, enabled = (step.intValue == 1 && titleTextState.value.isNotEmpty()) ||
+                        step.intValue == 2 && japTextState.value.isNotEmpty() ||
+                        step.intValue == 3
+            ) {
                 AnimatedContent(targetState = step.intValue == 3,
                     transitionSpec = { fadeIn() togetherWith fadeOut() }
-
                 ) {
                     if (it) {
                         Text(text = "Finish")

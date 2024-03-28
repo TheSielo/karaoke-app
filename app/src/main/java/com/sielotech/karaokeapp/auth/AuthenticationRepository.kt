@@ -3,6 +3,8 @@ package com.sielotech.karaokeapp.auth
 import com.google.firebase.auth.FirebaseAuth
 import javax.inject.Inject
 import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 
 
 class AuthenticationRepository @Inject constructor(
@@ -14,13 +16,25 @@ class AuthenticationRepository @Inject constructor(
         return firebaseAuth.currentUser != null
     }
 
+    fun userEmail(): String {
+        return firebaseAuth.currentUser?.email?:""
+    }
+
     suspend fun registerUser(email: String, password: String): Boolean = withContext(Dispatchers.IO) {
-        val result = firebaseAuth.createUserWithEmailAndPassword(email, password)
-        result.isSuccessful
+        try {
+            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 
     suspend fun loginUser(email: String, password: String): Boolean = withContext(Dispatchers.IO) {
-        val result = firebaseAuth.signInWithEmailAndPassword(email, password)
-        result.isSuccessful
+        try {
+            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }

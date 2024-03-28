@@ -8,7 +8,6 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.firebase.Firebase
 import com.sielotech.karaokeapp.R
 import com.sielotech.karaokeapp.activity.KActivity
 import com.sielotech.karaokeapp.databinding.ActivityAuthenticationBinding
@@ -18,10 +17,15 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 internal class AuthenticationActivity : KActivity() {
+    private var _binding: ActivityAuthenticationBinding? = null
+    private val b get() = _binding!!
+
+    private val viewModel: AuthenticationViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*b = ActivityAuthenticationBinding.inflate(layoutInflater)
+        _binding = ActivityAuthenticationBinding.inflate(layoutInflater)
         setContentView(b.root)
         b.registerButton.setOnClickListener {
             b.registrationGroup.visibility = View.VISIBLE
@@ -47,21 +51,17 @@ internal class AuthenticationActivity : KActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.authActivityUiState.collect { state ->
+                viewModel.authActivityState.collect { state ->
                     updateUI(state)
                 }
             }
-        }*/
-    }
-
-    private fun LoginContent() {
-
+        }
     }
 
     private fun updateUI(state: AuthenticationViewModel.AuthActivityUiState) {
         if (state is AuthenticationViewModel.AuthActivityUiState.Default) {
             //If the user is not authenticated, launch the authentication flow.
-            if (!state.success) {
+            if (state.isLoggedIn) {
                 finish()
             } else {
                 Toast.makeText(

@@ -18,7 +18,9 @@
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.KaraokeApp">
+            android:theme="@style/Theme.KaraokeApp"
+            android:windowSoftInputMode="adjustResize"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,7 +28,6 @@
             </intent-filter>
         </activity>
         <activity android:name="com.sielotech.karaokeapp.activity.auth.AuthenticationActivity" />
-        <activity android:name="com.sielotech.karaokeapp.activity.new_song.NewSongActivity" />
     </application>
 
 </manifest>
