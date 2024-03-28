@@ -27,8 +27,6 @@ internal class KaraokeViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val authenticationRepository: AuthenticationRepository,
 ) : ViewModel() {
-    private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
-    val navigationEvent = _navigationEvent.asSharedFlow()
 
     private val mutableState = MutableStateFlow(MainActivityUiState())
     val uiState = mutableState.asStateFlow()
@@ -39,10 +37,6 @@ internal class KaraokeViewModel @Inject constructor(
     }
 
     private fun checkLoginStatus() = viewModelScope.launch {
-        if (!authenticationRepository.isUserLoggedIn()) {
-            _navigationEvent.emit(NavigationEvent.NavigateToLogin)
-        }
-
         viewModelScope.launch {
             preferencesRepository.userEmail.collect { email ->
                 val state = mutableState.value
