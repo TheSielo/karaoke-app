@@ -22,7 +22,7 @@ internal class AuthenticationViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             preferencesRepository.isLoggedIn.collect { isLoggedIn ->
-                mutableState.value = AuthActivityUiState.Default(isLoggedIn)
+                mutableState.value = AuthActivityUiState.Default(isLoggedIn = isLoggedIn, authenticationFailure = false)
             }
         }
     }
@@ -32,7 +32,7 @@ internal class AuthenticationViewModel @Inject constructor(
             val success = authenticationRepository.registerUser(email, password)
             preferencesRepository.setIsLoggedIn(success)
             preferencesRepository.setUserEmail(authenticationRepository.userEmail())
-            mutableState.value = AuthActivityUiState.Default(isLoggedIn = success)
+            mutableState.value = AuthActivityUiState.Default(isLoggedIn = success, authenticationFailure = !success)
         }
     }
 
@@ -41,13 +41,14 @@ internal class AuthenticationViewModel @Inject constructor(
             val success = authenticationRepository.loginUser(email, password)
             preferencesRepository.setIsLoggedIn(success)
             preferencesRepository.setUserEmail(authenticationRepository.userEmail())
-            mutableState.value = AuthActivityUiState.Default(isLoggedIn = success)
+            mutableState.value = AuthActivityUiState.Default(isLoggedIn = success, authenticationFailure = !success)
         }
     }
 
     internal sealed class AuthActivityUiState {
         data class Default(
-            val isLoggedIn: Boolean
+            val isLoggedIn: Boolean = false,
+            val authenticationFailure: Boolean = false,
         ) : AuthActivityUiState()
         data object Loading: AuthActivityUiState()
     }

@@ -3,16 +3,12 @@ package com.sielotech.karaokeapp.activity.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sielotech.karaokeapp.api.FuriganaRepository
-import com.sielotech.karaokeapp.auth.AuthenticationRepository
 import com.sielotech.karaokeapp.database.SongsRepository
 import com.sielotech.karaokeapp.database.dao.Song
 import com.sielotech.karaokeapp.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,31 +21,27 @@ internal class KaraokeViewModel @Inject constructor(
     private val songsRepository: SongsRepository,
     private val furiganaRepository: FuriganaRepository,
     private val preferencesRepository: PreferencesRepository,
-    private val authenticationRepository: AuthenticationRepository,
 ) : ViewModel() {
 
-    private val mutableState = MutableStateFlow(MainActivityUiState())
+    private val mutableState = MutableStateFlow(KaraokeUiState())
     val uiState = mutableState.asStateFlow()
 
     init {
-        checkLoginStatus()
+        checkLoginData()
         collectSongs()
     }
 
-    private fun checkLoginStatus() = viewModelScope.launch {
+    private fun checkLoginData() = viewModelScope.launch {
         viewModelScope.launch {
             preferencesRepository.userEmail.collect { email ->
                 val state = mutableState.value
-                mutableState.value = MainActivityUiState(
-                    loading = false,
+                mutableState.value = KaraokeUiState(
                     email = email,
                     selectedIndex = state.selectedIndex,
-                    currentSong = if (state.songs.isNotEmpty())
-                        state.songs[state.selectedIndex]
-                    else
-                        null,
                     songs = state.songs,
-                    isPlaying = false
+                    furigana = state.furigana,
+                    selectedJapLines = state.selectedJapLines,
+                    selectedTransLines = state.selectedTransLines,
                 )
             }
         }
@@ -58,55 +50,86 @@ internal class KaraokeViewModel @Inject constructor(
     private fun collectSongs() {
         viewModelScope.launch {
             songsRepository.getAllSongsFlow().collect { songs ->
-                if (songs.isNotEmpty()) {
-                    if (mutableState.value.loading) {
-                        mutableState.value = MainActivityUiState(
-                            loading = false,
-                            email = preferencesRepository.userEmail.last(),
-                            selectedIndex = 0,
-                            currentSong = songs[0],
-                            songs = songs,
-                            isPlaying = false
-                        )
-                    } else {
-                        val state = mutableState.value
-                        mutableState.value = MainActivityUiState(
-                            loading = false,
-                            email = preferencesRepository.userEmail.last(),
-                            selectedIndex = state.selectedIndex,
-                            currentSong = state.songs[state.selectedIndex],
-                            songs = songs,
-                            isPlaying = false
-                        )
-                    }
-                }
+                val state = mutableState.value
+                mutableState.value = KaraokeUiState(
+                    email = state.email,
+                    selectedIndex = state.selectedIndex,
+                    songs = songs,
+                    furigana = state.furigana,
+                    selectedJapLines = getJapLines(state.selectedIndex),
+                    selectedTransLines = getTransLines(state.selectedIndex),
+                )
             }
         }
     }
 
 
-    suspend fun changeSong(index: Int) {
+    fun changeSong(index: Int) {
         val state = mutableState.value
-        mutableState.value = MainActivityUiState(
-            loading = false,
-            email = preferencesRepository.userEmail.last(),
+        mutableState.value = KaraokeUiState(
+            email = state.email,
             selectedIndex = index,
-            currentSong = state.songs[index],
             songs = state.songs,
-            isPlaying = false
+            furigana = listOf(),
+            selectedJapLines = getJapLines(index),
+            selectedTransLines = getTransLines(index),
         )
     }
 
-    internal class MainActivityUiState(
-        val loading: Boolean = true,
-        val email: String = "",
-        val currentSong: Song? = null,
-        val selectedIndex: Int = 0,
-        val songs: List<Song> = listOf(),
-        val isPlaying: Boolean = false,
-    )
-
-    sealed class NavigationEvent {
-        data object NavigateToLogin : NavigationEvent()
+    suspend fun getFurigana() {
+        val text = mutableState.value.songs[mutableState.value.selectedIndex].japaneseText
+        val regex = "\n+".toRegex()
+        val cleanedText = text.replace(regex, "\n")
+        val furigana = furiganaRepository.getFurigana(cleanedText)
+        val furiganaList = arrayListOf<ArrayList<List<String>>>()
+        furiganaList.add(arrayListOf())
+        for(list in furigana) {
+            if (list[0] == "\n") {
+                furiganaList.add(arrayListOf())
+                continue
+            } else {
+                furiganaList.last().add(list)
+            }
+        }
+        val state = mutableState.value
+        mutableState.value = KaraokeUiState(
+            email = state.email,
+            selectedIndex = state.selectedIndex,
+            songs = state.songs,
+            furigana = furiganaList,
+            selectedJapLines = state.selectedJapLines,
+            selectedTransLines = state.selectedTransLines,
+        )
     }
+
+    private fun getJapLines(index: Int): List<String> {
+        return if(mutableState.value.songs.isNotEmpty()) {
+            val text = mutableState.value.songs[index].japaneseText
+            val regex = "\n+".toRegex()
+            val cleanedText = text.replace(regex, "\n")
+            cleanedText.split("\n")
+        } else {
+            listOf()
+        }
+    }
+
+    private fun getTransLines(index: Int): List<String> {
+        return if(mutableState.value.songs.isNotEmpty()) {
+            val text = mutableState.value.songs[index].translatedText
+            val regex = "\n+".toRegex()
+            val cleanedText = text.replace(regex, "\n")
+            cleanedText.split("\n")
+        } else {
+            listOf()
+        }
+    }
+
+    internal class KaraokeUiState(
+        val email: String = "",
+        val selectedIndex: Int = 0,
+        val selectedJapLines: List<String> = listOf(),
+        val selectedTransLines: List<String> = listOf(),
+        val songs: List<Song> = listOf(),
+        val furigana: List<List<List<String>>> = listOf()
+    )
 }

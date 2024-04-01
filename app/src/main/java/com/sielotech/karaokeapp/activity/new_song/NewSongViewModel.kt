@@ -18,8 +18,7 @@ internal class NewSongViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
 ) : ViewModel() {
 
-    private val mutableState =
-        MutableStateFlow<NewSongActivityUiState>(NewSongActivityUiState.Default)
+    private val mutableState = MutableStateFlow(NewSongActivityUiState())
     val newSongActivityUiState = mutableState.asStateFlow()
 
     fun addOrUpdateSong(title: String, jap: String, trans: String, url: String = "") {
@@ -28,14 +27,20 @@ internal class NewSongViewModel @Inject constructor(
             uuid = uuid, title = title, japaneseText = jap, translatedText = trans, url = url
         )
         viewModelScope.launch {
-            val userId = authenticationRepository.userId
-            if (userId != null) {
-                songsRepository.addOrUpdateSong(song)
+            try {
+                val userId = authenticationRepository.userId
+                if (userId != null) {
+                    songsRepository.addOrUpdateSong(song)
+                }
+                mutableState.value = NewSongActivityUiState(success = true, error = false)
+            } catch (e: Exception) {
+                mutableState.value = NewSongActivityUiState(success = false, error = true)
             }
         }
     }
 
-    internal sealed class NewSongActivityUiState {
-        data object Default: NewSongActivityUiState()
-    }
+    internal class NewSongActivityUiState(
+        val success: Boolean = false,
+        val error: Boolean = false,
+    )
 }

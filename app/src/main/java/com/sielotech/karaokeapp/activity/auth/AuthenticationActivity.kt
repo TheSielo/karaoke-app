@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.compose.material3.Snackbar
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.snackbar.Snackbar
 import com.sielotech.karaokeapp.R
 import com.sielotech.karaokeapp.activity.KActivity
 import com.sielotech.karaokeapp.databinding.ActivityAuthenticationBinding
@@ -63,17 +65,18 @@ internal class AuthenticationActivity : KActivity() {
             //If the user is not authenticated, launch the authentication flow.
             if (state.isLoggedIn) {
                 finish()
-            } else {
-                Toast.makeText(
-                    this,
+            } else if (state.authenticationFailure) {
+                Snackbar.make(
+                    b.root,
                     getString(R.string.generic_error),
-                    Toast.LENGTH_LONG)
-                    .show()
+                    Snackbar.LENGTH_LONG
+                ).show()
             }
         }
     }
 
     @SuppressLint("MissingSuperCall")
     @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {}
+    override fun onBackPressed() {
+    }
 }

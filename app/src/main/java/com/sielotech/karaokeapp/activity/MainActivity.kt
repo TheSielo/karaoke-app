@@ -20,7 +20,9 @@ import androidx.navigation.compose.rememberNavController
 import com.sielotech.karaokeapp.activity.auth.AuthenticationActivity
 import com.sielotech.karaokeapp.activity.auth.AuthenticationViewModel
 import com.sielotech.karaokeapp.activity.main.KaraokeUI.KaraokeScreen
+import com.sielotech.karaokeapp.activity.main.KaraokeViewModel
 import com.sielotech.karaokeapp.activity.new_song.NewSongUI.NewSongScreen
+import com.sielotech.karaokeapp.activity.new_song.NewSongViewModel
 import com.sielotech.karaokeapp.preferences.PreferencesRepository
 import com.sielotech.karaokeapp.ui.theme.KaraokeAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,12 +59,12 @@ internal class MainActivity : KActivity() {
                     NavHost(navController, startDestination = "karaoke") {
                         composable("karaoke") {
                             KaraokeScreen(
-                                vm = hiltViewModel(),
+                                vm = hiltViewModel<KaraokeViewModel>(),
                                 onNavigateToNewSong = { navController.navigate("new_song") })
                         }
                         composable("new_song") {
                             NewSongScreen(
-                                vm = hiltViewModel(),
+                                vm = hiltViewModel<NewSongViewModel>(),
                                 navController = navController
                             )
                         }

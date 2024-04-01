@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +27,7 @@ class SongsRepository @Inject constructor(
         scope.launch {
             remoteSongsDataSource.remoteSongsFlow.collect {songs ->
                 for (song in songs) {
-                    addOrUpdateSong(song)
+                    localSongsDataSource.addOrUpdate(song)
                 }
             }
         }
@@ -37,7 +38,7 @@ class SongsRepository @Inject constructor(
         remoteSongsDataSource.addOrUpdate(song)
     }
 
-    suspend fun getAllSongsFlow(): Flow<List<Song>> {
+    fun getAllSongsFlow(): Flow<List<Song>> {
         return localSongsDataSource.getAllSongsFlow()
     }
 }

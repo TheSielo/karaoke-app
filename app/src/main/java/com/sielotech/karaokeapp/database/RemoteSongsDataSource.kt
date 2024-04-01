@@ -33,13 +33,8 @@ class RemoteSongsDataSource @Inject constructor(
 
     private fun waitForLogin() {
         scope.launch {
-            while(firebaseAuth.currentUser?.uid == null) {
+            while (firebaseAuth.currentUser?.uid == null) {
                 delay(1000)
-            }
-            val userId = firebaseAuth.currentUser?.uid
-            if(userId != null) {
-                val songRef = database.getReference("$userId/songs/")
-                songRef.setValue(null)
             }
             getRemoteSongs()
         }
@@ -47,7 +42,7 @@ class RemoteSongsDataSource @Inject constructor(
 
     fun addOrUpdate(song: Song) {
         val userId = firebaseAuth.currentUser?.uid
-        if(userId != null) {
+        if (userId != null) {
             val songRef = database.getReference("$userId/songs/${song.uuid}")
             songRef.setValue(Gson().toJson(song))
         }
@@ -56,7 +51,7 @@ class RemoteSongsDataSource @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     private fun getRemoteSongs() {
         val userId = firebaseAuth.currentUser?.uid
-        if(userId != null) {
+        if (userId != null) {
             val songsReg = database.getReference("$userId/songs")
             songsReg.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -72,6 +67,7 @@ class RemoteSongsDataSource @Inject constructor(
                         mutableRemoteSongsFlow.value = deserializedSongs
                     } catch (e: Exception) {
                         Timber.w("Deserialization error", e)
+                        mutableRemoteSongsFlow.value = listOf()
                     }
                 }
 
