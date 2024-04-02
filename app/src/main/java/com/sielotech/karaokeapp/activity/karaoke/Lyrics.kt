@@ -1,4 +1,4 @@
-package com.sielotech.karaokeapp.activity.main
+package com.sielotech.karaokeapp.activity.karaoke
 
 class Lyrics(
     val japaneseLines: List<String>,

@@ -1,4 +1,4 @@
-package com.sielotech.karaokeapp.activity.main
+package com.sielotech.karaokeapp.activity.karaoke
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,6 @@ import com.sielotech.karaokeapp.preferences.PreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,14 +33,8 @@ internal class KaraokeViewModel @Inject constructor(
     private fun checkLoginData() = viewModelScope.launch {
         viewModelScope.launch {
             preferencesRepository.userEmail.collect { email ->
-                val state = mutableState.value
-                mutableState.value = KaraokeUiState(
-                    email = email,
-                    selectedIndex = state.selectedIndex,
-                    songs = state.songs,
-                    furigana = state.furigana,
-                    selectedJapLines = state.selectedJapLines,
-                    selectedTransLines = state.selectedTransLines,
+                mutableState.value = mutableState.value.copyWith(
+                    email = email
                 )
             }
         }
@@ -51,11 +44,8 @@ internal class KaraokeViewModel @Inject constructor(
         viewModelScope.launch {
             songsRepository.getAllSongsFlow().collect { songs ->
                 val state = mutableState.value
-                mutableState.value = KaraokeUiState(
-                    email = state.email,
-                    selectedIndex = state.selectedIndex,
+                mutableState.value = mutableState.value.copyWith(
                     songs = songs,
-                    furigana = state.furigana,
                     selectedJapLines = getJapLines(state.selectedIndex),
                     selectedTransLines = getTransLines(state.selectedIndex),
                 )
@@ -65,14 +55,13 @@ internal class KaraokeViewModel @Inject constructor(
 
 
     fun changeSong(index: Int) {
-        val state = mutableState.value
-        mutableState.value = KaraokeUiState(
-            email = state.email,
+        mutableState.value = mutableState.value.copyWith(
             selectedIndex = index,
-            songs = state.songs,
             furigana = listOf(),
             selectedJapLines = getJapLines(index),
             selectedTransLines = getTransLines(index),
+            loadingFurigana = false
+
         )
     }
 
@@ -83,7 +72,7 @@ internal class KaraokeViewModel @Inject constructor(
         val furigana = furiganaRepository.getFurigana(cleanedText)
         val furiganaList = arrayListOf<ArrayList<List<String>>>()
         furiganaList.add(arrayListOf())
-        for(list in furigana) {
+        for (list in furigana) {
             if (list[0] == "\n") {
                 furiganaList.add(arrayListOf())
                 continue
@@ -91,19 +80,14 @@ internal class KaraokeViewModel @Inject constructor(
                 furiganaList.last().add(list)
             }
         }
-        val state = mutableState.value
-        mutableState.value = KaraokeUiState(
-            email = state.email,
-            selectedIndex = state.selectedIndex,
-            songs = state.songs,
+        mutableState.value = mutableState.value.copyWith(
             furigana = furiganaList,
-            selectedJapLines = state.selectedJapLines,
-            selectedTransLines = state.selectedTransLines,
+            loadingFurigana = false
         )
     }
 
     private fun getJapLines(index: Int): List<String> {
-        return if(mutableState.value.songs.isNotEmpty()) {
+        return if (mutableState.value.songs.isNotEmpty()) {
             val text = mutableState.value.songs[index].japaneseText
             val regex = "\n+".toRegex()
             val cleanedText = text.replace(regex, "\n")
@@ -114,7 +98,7 @@ internal class KaraokeViewModel @Inject constructor(
     }
 
     private fun getTransLines(index: Int): List<String> {
-        return if(mutableState.value.songs.isNotEmpty()) {
+        return if (mutableState.value.songs.isNotEmpty()) {
             val text = mutableState.value.songs[index].translatedText
             val regex = "\n+".toRegex()
             val cleanedText = text.replace(regex, "\n")
@@ -130,6 +114,27 @@ internal class KaraokeViewModel @Inject constructor(
         val selectedJapLines: List<String> = listOf(),
         val selectedTransLines: List<String> = listOf(),
         val songs: List<Song> = listOf(),
-        val furigana: List<List<List<String>>> = listOf()
-    )
+        val furigana: List<List<List<String>>> = listOf(),
+        val loadingFurigana: Boolean = false,
+    ) {
+        fun copyWith(
+            email: String? = null,
+            selectedIndex: Int? = null,
+            selectedJapLines: List<String>? = null,
+            selectedTransLines: List<String>? = null,
+            songs: List<Song>? = null,
+            furigana: List<List<List<String>>>? = null,
+            loadingFurigana: Boolean? = null,
+        ): KaraokeUiState {
+            return KaraokeUiState(
+                email = email ?: this.email,
+                selectedIndex = selectedIndex ?: this.selectedIndex,
+                selectedJapLines = selectedJapLines ?: this.selectedJapLines,
+                selectedTransLines = selectedTransLines ?: this.selectedTransLines,
+                songs = songs ?: this.songs,
+                furigana = furigana ?: this.furigana,
+                loadingFurigana = loadingFurigana ?: this.loadingFurigana,
+            )
+        }
+    }
 }
