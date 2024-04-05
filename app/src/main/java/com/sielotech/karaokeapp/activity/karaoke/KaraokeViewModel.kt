@@ -53,9 +53,13 @@ internal class KaraokeViewModel @Inject constructor(
         }
     }
 
+    suspend fun deleteSong() {
+        songsRepository.deleteSong(uiState.value.songs[uiState.value.selectedIndex])
+        changeSong(0)
+    }
 
     fun changeSong(index: Int) {
-        mutableState.value = mutableState.value.copyWith(
+        mutableState.value = uiState.value.copyWith(
             selectedIndex = index,
             furigana = listOf(),
             selectedJapLines = getJapLines(index),
@@ -66,7 +70,10 @@ internal class KaraokeViewModel @Inject constructor(
     }
 
     suspend fun getFurigana() {
-        val text = mutableState.value.songs[mutableState.value.selectedIndex].japaneseText
+        mutableState.value = uiState.value.copyWith(
+            loadingFurigana = true
+        )
+        val text = uiState.value.songs[uiState.value.selectedIndex].japaneseText
         val regex = "\n+".toRegex()
         val cleanedText = text.replace(regex, "\n")
         val furigana = furiganaRepository.getFurigana(cleanedText)
@@ -80,15 +87,15 @@ internal class KaraokeViewModel @Inject constructor(
                 furiganaList.last().add(list)
             }
         }
-        mutableState.value = mutableState.value.copyWith(
+        mutableState.value = uiState.value.copyWith(
             furigana = furiganaList,
             loadingFurigana = false
         )
     }
 
     private fun getJapLines(index: Int): List<String> {
-        return if (mutableState.value.songs.isNotEmpty()) {
-            val text = mutableState.value.songs[index].japaneseText
+        return if (uiState.value.songs.isNotEmpty()) {
+            val text = uiState.value.songs[index].japaneseText
             val regex = "\n+".toRegex()
             val cleanedText = text.replace(regex, "\n")
             cleanedText.split("\n")
@@ -98,8 +105,8 @@ internal class KaraokeViewModel @Inject constructor(
     }
 
     private fun getTransLines(index: Int): List<String> {
-        return if (mutableState.value.songs.isNotEmpty()) {
-            val text = mutableState.value.songs[index].translatedText
+        return if (uiState.value.songs.isNotEmpty()) {
+            val text = uiState.value.songs[index].translatedText
             val regex = "\n+".toRegex()
             val cleanedText = text.replace(regex, "\n")
             cleanedText.split("\n")

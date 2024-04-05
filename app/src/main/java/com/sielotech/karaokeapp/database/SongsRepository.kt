@@ -41,4 +41,8 @@ class SongsRepository @Inject constructor(
     fun getAllSongsFlow(): Flow<List<Song>> {
         return localSongsDataSource.getAllSongsFlow()
     }
+
+    suspend fun deleteSong(song: Song) {
+        localSongsDataSource.deleteSong(song)
+    }
 }

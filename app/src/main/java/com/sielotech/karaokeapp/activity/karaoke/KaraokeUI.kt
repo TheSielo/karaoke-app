@@ -1,5 +1,6 @@
 package com.sielotech.karaokeapp.activity.karaoke
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,12 +24,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,7 +50,10 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -76,10 +86,10 @@ internal object KaraokeUI {
             Scaffold(
                 Modifier.padding(PaddingValues(all = 16.dp)),
                 floatingActionButton = {
-                    KaraokeFAB(vm, scope)
+                    KaraokeFAB(state, vm, scope)
                 },
                 topBar = {
-                    KaraokeTopBar(state, drawerState, scope, onNavigateToNewSong)
+                    KaraokeTopBar(state, drawerState, vm, scope, onNavigateToNewSong)
                 },
             ) { innerPadding ->
                 if (state.songs.isEmpty()) {
@@ -147,18 +157,29 @@ internal object KaraokeUI {
 
     @Composable
     fun KaraokeFAB(
+        state: KaraokeViewModel.KaraokeUiState,
         vm: KaraokeViewModel,
         scope: CoroutineScope
     ) {
-        ExtendedFloatingActionButton(
-            onClick = {
-                scope.launch {
-                    vm.getFurigana()
+        AnimatedContent(label = "fab", targetState = state.loadingFurigana) { loading ->
+            if (loading) {
+                FloatingActionButton(onClick = {}) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
-            },
-            icon = { Icon(Icons.Filled.Add, "Add song") },
-            text = { Text(text = "ふりがな", fontWeight = FontWeight.Bold) }
-        )
+            } else if (state.furigana.isEmpty()) {
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            vm.getFurigana()
+                        }
+                    },
+                    icon = { Icon(Icons.Filled.Add, "Add song") },
+                    text = { Text(text = "ふりがな", fontWeight = FontWeight.Bold) }
+                )
+            }
+        }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -166,9 +187,12 @@ internal object KaraokeUI {
     fun KaraokeTopBar(
         state: KaraokeViewModel.KaraokeUiState,
         drawerState: DrawerState,
+        vm: KaraokeViewModel,
         scope: CoroutineScope,
         onNavigateToNewSong: () -> Unit
     ) {
+        var showMenu by remember { mutableStateOf(false) }
+
         TopAppBar(
             title = {
                 val title = if (state.songs.isEmpty()) {
@@ -196,6 +220,28 @@ internal object KaraokeUI {
                     Icon(
                         imageVector = Icons.Filled.Add,
                         contentDescription = "New song",
+                    )
+                }
+
+                IconButton(onClick = { showMenu = !showMenu }) {
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = "More actions"
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Delete song") },
+                        onClick = {
+                            showMenu = false
+                            scope.launch {
+                                vm.deleteSong()
+                            }
+                        }
                     )
                 }
             },
