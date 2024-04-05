@@ -38,3 +38,8 @@ gen-external-apklibs
 
 .keystores/
 .app/release/
+
+.README.md.un~
+README.md~
+..gitignore.un~
+.gitignore~
