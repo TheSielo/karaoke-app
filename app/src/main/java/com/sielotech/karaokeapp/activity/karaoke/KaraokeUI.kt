@@ -48,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,6 +77,11 @@ internal object KaraokeUI {
         val scope = rememberCoroutineScope()
         val state by vm.uiState.collectAsState()
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+        // Call initialize() when the composable is first composed
+        LaunchedEffect(Unit) {
+            vm.initialize()
+        }
 
         ModalNavigationDrawer(
             drawerContent = {

@@ -29,7 +29,7 @@ internal class KaraokeViewModel @Inject constructor(
     /** The publicly accessible immutable state representing the state of KaraokeUI */
     val uiState = mutableState.asStateFlow()
 
-    init {
+    fun initialize() {
         checkLoginData()
         collectSongs()
     }
@@ -75,7 +75,6 @@ internal class KaraokeViewModel @Inject constructor(
             selectedJapLines = getJapLines(index),
             selectedTransLines = getTransLines(index),
             loadingFurigana = false
-
         )
     }
 
