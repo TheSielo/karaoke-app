@@ -3,9 +3,7 @@ package com.sielotech.karaokeapp.activity.auth
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.compose.material3.Snackbar
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -62,7 +60,7 @@ internal class AuthenticationActivity : KActivity() {
 
     private fun updateUI(state: AuthenticationViewModel.AuthActivityUiState) {
         if (state is AuthenticationViewModel.AuthActivityUiState.Default) {
-            //If the user is not authenticated, launch the authentication flow.
+            //If the user is authenticated, go back to MainActivity
             if (state.isLoggedIn) {
                 finish()
             } else if (state.authenticationFailure) {

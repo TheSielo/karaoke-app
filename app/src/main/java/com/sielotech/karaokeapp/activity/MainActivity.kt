@@ -39,6 +39,7 @@ internal class MainActivity : KActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 authViewModel.authActivityState.collect { state ->
                     if(state is AuthenticationViewModel.AuthActivityUiState.Default) {
+                        //If the user is not authenticated, launch the authentication flow
                         if (!state.isLoggedIn) {
                             startActivity(
                                 Intent(
