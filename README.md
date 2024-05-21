@@ -21,10 +21,10 @@ It demonstrates the use of many modern and legacy Android and Kotlin libraries a
 - Dynamic Theming with MaterialYou;
 - Automatic Dark Theme;
 
-- Unit testing;
-- Mockito;
-
 - Legacy UI with XML and Views;
 - Legacy navigation between activities;
 
+- Unit testing;
+- Mockito;
+- CI using GitHub actions for automated builds and tests with error reporting;
 - Documentation with Javadoc.
