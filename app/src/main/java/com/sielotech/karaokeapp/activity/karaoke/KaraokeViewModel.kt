@@ -30,6 +30,7 @@ internal class KaraokeViewModel @Inject constructor(
     val uiState = mutableState.asStateFlow()
 
     fun initialize() {
+        songsRepository.initialize()
         checkLoginData()
         collectSongs()
     }

@@ -6,26 +6,29 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 /** Entry point for all operations involving creating, retrieving, updating and deleting songs.
- * @param songDao A [SongDao] singleton that's provided by Hilt through DI.
+ * @param localSongsDataSource A [LocalSongsDataSource] instance provided by Hilt.
+ * @param remoteSongsDataSource A [RemoteSongsDataSource] instance provided by Hilt.
  */
 class SongsRepository @Inject constructor(
     private val localSongsDataSource: LocalSongsDataSource,
     private val remoteSongsDataSource: RemoteSongsDataSource,
+    private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
-    init {
+    fun initialize() {
         loadRemoteSongs()
     }
 
     private fun loadRemoteSongs() {
         scope.launch {
-            remoteSongsDataSource.remoteSongsFlow.collect {songs ->
+            remoteSongsDataSource.remoteSongsFlow.collect { songs ->
                 for (song in songs) {
                     localSongsDataSource.addOrUpdate(song)
                 }

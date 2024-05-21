@@ -1,6 +1,5 @@
 package com.sielotech.karaokeapp.activity.new_song
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -38,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.sielotech.karaokeapp.R
@@ -53,6 +51,7 @@ internal object NewSongUI {
         val snackbarHostState = remember { SnackbarHostState() }
 
         LaunchedEffect(key1 = "newSongScreen") {
+            vm.initialize()
             vm.newSongActivityUiState.collect { state ->
                 if (state.success) {
                     navController.popBackStack()

@@ -21,6 +21,10 @@ internal class NewSongViewModel @Inject constructor(
     private val mutableState = MutableStateFlow(NewSongActivityUiState())
     val newSongActivityUiState = mutableState.asStateFlow()
 
+    fun initialize() {
+        songsRepository.initialize()
+    }
+
     fun addOrUpdateSong(title: String, jap: String, trans: String, url: String = "") {
         val uuid = UUID.randomUUID().toString()
         val song = Song(

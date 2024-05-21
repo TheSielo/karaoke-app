@@ -62,8 +62,6 @@ class KaraokeViewModelTest {
 
     @Test
     fun `deleteSong should delete a song and update state (1 song list)`() = runTest {
-        // Mock the deleteSong method to do nothing
-        whenever(songsRepository.deleteSong(isA<Song>())).thenReturn(Unit)
 
         //Create a fake song and add it to the flow
         val song = Song(
