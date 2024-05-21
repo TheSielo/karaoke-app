@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "612348825479",
+    "firebase_url": "https://karaoke-app-761ea-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "karaoke-app-761ea",
+    "storage_bucket": "karaoke-app-761ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612348825479:android:67b370ab4af0c7e6ce8d22",
+        "android_client_info": {
+          "package_name": "com.sielotech.karaokeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612348825479-lm9etsc7mm6vtqmipd54j633lt5m2emi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sielotech.karaokeapp",
+            "certificate_hash": "5373ddaa3249b5ee25ba7f51f836f7980fedcd91"
+          }
+        },
+        {
+          "client_id": "612348825479-0laartkmpnm6q6fc5sic9r2jj0k1rvgu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrw2MKeKgkg9IeD5PCBBfiU5FB27wFMW8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612348825479-0laartkmpnm6q6fc5sic9r2jj0k1rvgu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
