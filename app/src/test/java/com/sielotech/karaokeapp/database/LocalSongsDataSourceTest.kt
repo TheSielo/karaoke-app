@@ -5,6 +5,7 @@ import com.sielotech.karaokeapp.database.entity.SongDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
@@ -17,6 +18,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LocalSongsDataSourceTest {
@@ -43,18 +45,32 @@ class LocalSongsDataSourceTest {
 
     @Test
     fun `addOrUpdate should call insertOrUpdate on songDao`() = runTest {
+        /* Mock a song and verify that the method was called */
         val song = mock<Song>()
         localSongsDataSource.addOrUpdate(song)
         verify(songDao).insertOrUpdate(song)
     }
 
     @Test
-    fun `getAllSongsFlow should return a list of songs`() = runTest {
+    fun `getAllSongsFlow should return a flow with a list of songs`() = runTest {
+        /* Mock some songs and add them to the flow */
+        val song1 = mock<Song>()
+        val song2 = mock<Song>()
+        val song3 = mock<Song>()
+        val expectedList = listOf(song1, song2, song3)
+        songsFlow.value = expectedList
 
+        //Mock songDao to return the fake list
+        whenever(songDao.getSongsFlow()).thenReturn(songsFlow)
+
+        /* Check that the flow contains what we expect */
+        val songs = songDao.getSongsFlow().first()
+        assert(songs == expectedList)
     }
 
     @Test
     fun `deleteSong should call deleteSong on songDao`() = runTest {
+        /* Mock a song and verify that the method was called */
         val song = mock<Song>()
         localSongsDataSource.deleteSong(song)
         verify(songDao).delete(song)
