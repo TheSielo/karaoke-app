@@ -23,6 +23,7 @@ class SongsRepository @Inject constructor(
 ) {
 
     fun initialize() {
+        remoteSongsDataSource.initialize()
         loadRemoteSongs()
     }
 

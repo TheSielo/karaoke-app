@@ -11,7 +11,7 @@ It demonstrates the use of many modern and legacy Android and Kotlin libraries a
 - Kotlin Flows;
 - Kotlin Coroutines;
 
-- Dependecy injection with Hilt;
+- Dependency injection with Hilt;
 - API calls with Retrofit;
 
 - Authentication with Firebase Authentication;

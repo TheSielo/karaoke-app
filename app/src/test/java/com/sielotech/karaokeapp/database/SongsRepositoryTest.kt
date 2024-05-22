@@ -83,6 +83,7 @@ class SongsRepositoryTest {
         //Wait for the repository to finish adding the songs
         advanceUntilIdle()
 
+        /* Verify that addOrUpdate was called on both data sources for both songs */
         verify(localSongsDataSource).addOrUpdate(song1)
         verify(remoteSongsDataSource).addOrUpdate(song1)
         verify(localSongsDataSource).addOrUpdate(song2)
@@ -99,17 +100,19 @@ class SongsRepositoryTest {
         //Mock remoteSongsFlow to return our fake flow
         whenever(localSongsDataSource.getAllSongsFlow()).thenReturn(songsFlow)
 
+        //Verify that the flow contains the songs we expect
         val flow = localSongsDataSource.getAllSongsFlow()
         assertEquals(songsFlow.value, flow.first())
     }
 
     @Test
     fun `deleteSong should call deleteSong on localSongsDataSource`() = testScope.runTest {
+        /* Create a mock song and verify that deleteSong gets called */
         val song = mock<Song>()
         songsRepository.deleteSong(song)
+
         //Wait for the repository to finish deleting the song
         advanceUntilIdle()
-
         verify(localSongsDataSource).deleteSong(song)
     }
 }

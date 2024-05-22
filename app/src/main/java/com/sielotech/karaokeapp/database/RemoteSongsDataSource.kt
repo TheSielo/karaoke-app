@@ -8,8 +8,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import com.sielotech.karaokeapp.database.dao.Song
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,13 +19,13 @@ import javax.inject.Inject
 class RemoteSongsDataSource @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val database: FirebaseDatabase,
+    private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     private val mutableRemoteSongsFlow = MutableStateFlow<List<Song>>(emptyList())
     val remoteSongsFlow = mutableRemoteSongsFlow.asStateFlow()
 
-    init {
+    fun initialize() {
         waitForLogin()
     }
 
@@ -52,8 +50,8 @@ class RemoteSongsDataSource @Inject constructor(
     private fun getRemoteSongs() {
         val userId = firebaseAuth.currentUser?.uid
         if (userId != null) {
-            val songsReg = database.getReference("$userId/songs")
-            songsReg.addValueEventListener(object : ValueEventListener {
+            val songsRef = database.getReference("$userId/songs")
+            songsRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     try {
                         val songs: Map<String, Any> = dataSnapshot.value as Map<String, Any>
