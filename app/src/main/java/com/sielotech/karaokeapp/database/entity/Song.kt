@@ -1,4 +1,4 @@
-package com.sielotech.karaokeapp.database.dao
+package com.sielotech.karaokeapp.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

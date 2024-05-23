@@ -13,6 +13,7 @@ import kotlinx.coroutines.Job
 @InstallIn(SingletonComponent::class)
 object CoroutineModule {
 
+    /** Provides a different instance of [CoroutineScope] everytime it's called. */
     @Provides
     fun provideCoroutineScope(): CoroutineScope {
         return CoroutineScope(Job() + Dispatchers.IO)

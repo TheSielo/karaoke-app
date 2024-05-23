@@ -26,5 +26,6 @@ It demonstrates the use of many modern and legacy Android and Kotlin libraries a
 
 - Unit testing;
 - Mockito;
-- CI using GitHub actions for automated builds and tests with error reporting;
+- CI for automated builds and tests with error reporting;
+- CI for dependencies vulnerabilities check with Dependabot;
 - Documentation with Javadoc.

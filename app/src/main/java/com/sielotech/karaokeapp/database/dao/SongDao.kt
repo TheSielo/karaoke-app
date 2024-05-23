@@ -1,11 +1,11 @@
-package com.sielotech.karaokeapp.database.entity
+package com.sielotech.karaokeapp.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.sielotech.karaokeapp.database.dao.Song
+import com.sielotech.karaokeapp.database.entity.Song
 import kotlinx.coroutines.flow.Flow
 
 /** The Room DAO relative to the [Song] entity. */

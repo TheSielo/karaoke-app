@@ -1,7 +1,7 @@
 package com.sielotech.karaokeapp.database
 
-import com.sielotech.karaokeapp.database.dao.Song
-import com.sielotech.karaokeapp.database.entity.SongDao
+import com.sielotech.karaokeapp.database.entity.Song
+import com.sielotech.karaokeapp.database.dao.SongDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

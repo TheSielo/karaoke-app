@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sielotech.karaokeapp.auth.AuthenticationRepository
 import com.sielotech.karaokeapp.database.SongsRepository
-import com.sielotech.karaokeapp.database.dao.Song
+import com.sielotech.karaokeapp.database.entity.Song
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

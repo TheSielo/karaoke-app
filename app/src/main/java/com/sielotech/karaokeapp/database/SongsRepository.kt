@@ -1,20 +1,15 @@
 package com.sielotech.karaokeapp.database
 
-import com.sielotech.karaokeapp.database.dao.Song
-import com.sielotech.karaokeapp.database.entity.SongDao
+import com.sielotech.karaokeapp.database.entity.Song
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 /** Entry point for all operations involving creating, retrieving, updating and deleting songs.
- * @param localSongsDataSource A [LocalSongsDataSource] instance provided by Hilt.
- * @param remoteSongsDataSource A [RemoteSongsDataSource] instance provided by Hilt.
+ * @param localSongsDataSource An instance of [LocalSongsDataSource] provided by Hilt.
+ * @param remoteSongsDataSource An instance of [RemoteSongsDataSource] provided by Hilt.
+ * @param scope An instance of [CoroutineScope] provided by [com.sielotech.karaokeapp.hilt.CoroutineModule]
  */
 class SongsRepository @Inject constructor(
     private val localSongsDataSource: LocalSongsDataSource,

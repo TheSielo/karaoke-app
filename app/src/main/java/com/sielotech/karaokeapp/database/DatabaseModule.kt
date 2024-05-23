@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
-import com.google.firebase.database.ktx.database
-import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,7 +32,7 @@ object DatabaseModule {
         .build()
 
     /** Provides the SongDao used by Room.
-     * @return A singleton instance of [SongDao].
+     * @return A singleton instance of [com.sielotech.karaokeapp.database.entity.SongDao].
      */
     @Singleton
     @Provides

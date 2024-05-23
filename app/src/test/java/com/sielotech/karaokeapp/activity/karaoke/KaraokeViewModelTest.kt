@@ -2,7 +2,7 @@ package com.sielotech.karaokeapp.activity.karaoke
 
 import com.sielotech.karaokeapp.api.FuriganaRepository
 import com.sielotech.karaokeapp.database.SongsRepository
-import com.sielotech.karaokeapp.database.dao.Song
+import com.sielotech.karaokeapp.database.entity.Song
 import com.sielotech.karaokeapp.preferences.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,7 +19,6 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.isA
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)

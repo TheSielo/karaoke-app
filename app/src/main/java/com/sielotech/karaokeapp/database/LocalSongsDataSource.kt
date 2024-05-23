@@ -1,11 +1,12 @@
 package com.sielotech.karaokeapp.database
 
-import com.sielotech.karaokeapp.database.dao.Song
-import com.sielotech.karaokeapp.database.entity.SongDao
+import com.sielotech.karaokeapp.database.entity.Song
+import com.sielotech.karaokeapp.database.dao.SongDao
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-/** This data source allows to add, modify and delete songs stored locally. */
+/** This data source allows to add, modify and delete songs stored locally.
+ * @param songDao An instance of SongDao provided by [DatabaseModule] */
 class LocalSongsDataSource @Inject constructor(
     private val songDao: SongDao,
 ) {
